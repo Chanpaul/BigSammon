@@ -1,5 +1,6 @@
 function result = ESam(proj,data, param,data_sep_info)
 %rand('seed',120)
+colors={'r.' 'gx' 'b+' 'ys' 'm.' 'c.' 'k.' 'r*' 'g*' 'b*' 'y*' 'm*' 'c*' 'k*' };
 D=data;
 %paramdag.percent=2;
 %dagInfo = DAGInit(D,paramdag);
@@ -102,8 +103,8 @@ for i=1:maxstep;
   fprintf(2, '\r%d iterations', i);
 end   
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-disp('Press any key.')
-pause
+% disp('Press any key.')
+% pause
 xv=x(frt,:);
 % reshape
 orig_si(end) = odim; 
