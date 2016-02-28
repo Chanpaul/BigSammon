@@ -1,15 +1,5 @@
-%Test longitidal dataset, computing the validation index, output Sammon
-%mapping graph;
-%This version begins at 2015-03-01. The main change is the computing
-%accuracy for the real dataset, e.g., tdta and mv. They usually include
-%multiple copies of dataset. We have to compute the accuracy for each copy,
-%and then determine the belonging for each data.
 % clear all
 % close all
-% path(path,'FuzzyClusteringToolbox_m\FUZZCLUST')
-% path(path,'D:\Wangjin\UmassMed\Code\PR\NCestimation_V2');
-% path(path,'D:\Wangjin\UmassMed\Code\PR\lib');
-% dataDir='D:\Wangjin\UmassMed\Code\PR\Dataset\';
 %dataDir= pwd;
 %dataDir=strcat(dataDir,'\');
 dataDir='..\';
@@ -228,20 +218,20 @@ path(path,'lib');
 % data.label(data.label==0)=max(data.label)+1;
 % [ND,na]=size(data.X);
 %************************waveform**************************************
-dataFileName='Dataset\waveform.data';
-dataFile=strcat(dataDir,dataFileName);
-dataset=importdata(dataFile); 
-dataLabelFg=22; %Indicates which column is the label, 0 for unlabeled.
-featureFg=[1:21];  %features used for clustering
-isNormalizable=1;   % indicates whether this dataset needs normalization.
-otherFg=[];  %others, e.g., the id and sth like.
-data.ncopy=1;
-data.numPerCopy=5000;
-data.cnum=3;
-data.X=dataset(:,featureFg);
-data.label=dataset(:,dataLabelFg);
-%data.label=num2cell(dataset(:,dataLabelFg));    %describe label with cell array;
-[ND,na]=size(data.X);
+% dataFileName='Dataset\waveform.data';
+% dataFile=strcat(dataDir,dataFileName);
+% dataset=importdata(dataFile); 
+% dataLabelFg=22; %Indicates which column is the label, 0 for unlabeled.
+% featureFg=[1:21];  %features used for clustering
+% isNormalizable=1;   % indicates whether this dataset needs normalization.
+% otherFg=[];  %others, e.g., the id and sth like.
+% data.ncopy=1;
+% data.numPerCopy=5000;
+% data.cnum=3;
+% data.X=dataset(:,featureFg);
+% data.label=dataset(:,dataLabelFg);
+% %data.label=num2cell(dataset(:,dataLabelFg));    %describe label with cell array;
+% [ND,na]=size(data.X);
 %****************************end*****************************************
 % %************************wine**************************************
 % dataFileName='Dataset\wine\wine.data';
@@ -260,6 +250,35 @@ data.label=dataset(:,dataLabelFg);
 % %data.label=num2cell(dataset(:,dataLabelFg));    %describe label with cell array;
 % [ND,na]=size(data.X);
 %****************************end*****************************************
+%************************fit quit primo*********************************
+% mu=zeros(4,20);
+% sigma=zeros(20,20);
+% simulate_data_num=10000;
+% simulate_data=[];
+% mu=[];
+% sigma=[];
+% for i=1:4,
+%     tdata=data.X(data.label==i,:);
+%     t_num=round(simulate_data_num*(length(tdata)/length(data.X)));
+%     [muhat,sigma1hat]=normfit(tdata);
+%     sigmahat=cov(tdata);
+%     temp_data=mvnrnd(muhat,sigmahat,t_num);
+%     temp_data(:,end+1)=i;
+%     mu=[mu;muhat];
+%     sigma=[sigma;sigmahat];
+%     simulate_data=[simulate_data ;temp_data];
+% end;
+% dlmwrite('test.dat',simulate_data);
+% dlmwrite('test.mu',mu);
+% dlmwrite('test.sigma',sigma);
+%dlmwrite('test.index',index);
+
+%*************************************************************
+
+dataset=importdata('.\test.dat');
+data.cnum=4;
+data.label=dataset(:,21);
+data.X=dataset(:,1:20);
 %Calling function of the visualization functions
 % close all
 % clear all
@@ -274,13 +293,13 @@ param.vis=0;
 
 ClustName=unique(data.label);
 %*****************sammon from drtoolbox**********
-types='Sammon';
-no_dims=2;
-mappedA = compute_mapping(data.X, types, no_dims);
+% types='Sammon';
+% no_dims=2;
+% mappedA = compute_mapping(data.X, types, no_dims);
 
 %*********************bigSammon******************************
-% param.percent=2; %5
-% mappedA=bigSammon(data,param);
+param.percent=2; %5
+mappedA=bigSammon(data,param);
 %*************************compute classification accuracy*******************************
 idx=kmeans(mappedA,data.cnum);
 if iscell(ClustName),
