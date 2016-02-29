@@ -97,7 +97,7 @@ for i=1:maxstep;
 %     plot(xv(:,1), xv(:,2), 'r*');
     %projeval(x,xv,m,nc,fm);
     hold off
-    title('Fuzzy Sammon mapping - training')
+    %title('Fuzzy Sammon mapping - training')
     drawnow
   end
   fprintf(2, '\r%d iterations', i);

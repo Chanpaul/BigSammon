@@ -34,8 +34,8 @@ telapsed1=toc(ts1);
 figure(2);
 plot(data_sep_info.rho,data_sep_info.delta,'o');
 grid;
-fig_name=strcat(result_dir,flag,'_dc',num2str(percent),'_dg');
-saveas(2,fig_name{1},'png');
+fig_name1=strcat(result_dir,flag,'_dc',num2str(percent),'_dg');
+saveas(2,fig_name1{1},'png');
 
 ts2=tic;
 [mappedX, mapping] = pca(data.X);
@@ -49,8 +49,8 @@ result=ESam(proj,data.X,param,data_sep_info);
 
 telapsed2=toc(ts2);
 ClustName=unique(C);
-fig_name=strcat(result_dir,flag,'_dc',num2str(percent),'_2dim1');
-saveas(3,fig_name{1},'png');
+fig_name2=strcat(result_dir,flag,'_dc',num2str(percent),'_2dim1');
+saveas(3,fig_name2{1},'png');
 
 figure(4);
 for kk=1:length(ClustName),
@@ -69,8 +69,10 @@ for kk=1:length(ClustName),
     end
     hold on;
 end;
-fig_name=strcat(result_dir,flag,'_dc',num2str(percent),'2dim2');
-saveas(4,fig_name{1},'png');
+title_content=sprintf('BigSammon on %s with dc=%d',flag{1},percent);
+title(title_content);
+fig_name3=strcat(result_dir,flag,'_dc',num2str(percent),'2dim2');
+saveas(4,fig_name3{1},'png');
 projection.proj=result.proj.P;
 projection.elapsed=telapsed2+telapsed1;
 close all;
