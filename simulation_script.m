@@ -4,6 +4,7 @@
 %dataDir=strcat(dataDir,'\');
 dataDir='..\';
 path(path,'lib');
+set(0,'DefaultFigureVisible','off');
 %***********************set global simulation configuration****************************
 data_set_name={'waveform','pageblock','Quitprimo'};
 base=10000;
@@ -16,9 +17,9 @@ colors={'r.' 'gx' 'b+' 'ys' 'm.' 'c.' 'k.' 'r*' 'g*' 'b*' 'y*' 'm*' 'c*' 'k*' };
 cur_dir=pwd;
 data_set_keys=dataMap.keys();
 numOfDataset=length(data_set_keys);
-drtools={'sammon','bigsammon'};
+drtools={'bigsammon','sammon'};  %'sammon'
 mcmc=20;
-dc_lim=50;%50;
+dc_lim=30;%50;
 eval_method='fcm';  %'kmeans'
 %********************************end of configuration************************************
 %***********************************set Sammon configuration*****************************
@@ -28,6 +29,8 @@ eval_method='fcm';  %'kmeans'
 
 %*******************************run simulation**********************************************
 for ii = 1:numOfDataset,
+    disp_str=sprintf('Running on dataset %s',data_set_keys{ii});
+    disp(disp_str);
     cur_data_str=dataMap(data_set_keys{ii});
     result_dir=strcat(cur_dir,'\result\',data_set_keys{ii});
     if exist(result_dir,'dir')~=7,
@@ -125,13 +128,12 @@ for ii = 1:numOfDataset,
         else if strcmp(drtools{kk},'bigsammon'),
             %*********************bigSammon******************************
                 drname='bigsammon';
-                
+                avg_elaps=[];
+                std_elaps=[];
+                avg_acc=[];
+                std_acc=[];
                 for tt=1:dc_lim,%50,%12:5:100,                    
-                    param.percent=tt; %5 2   
-                    avg_elaps=[];
-                    std_elaps=[];
-                    avg_acc=[];
-                    std_acc=[];
+                    param.percent=tt; %5 2                       
                     temp_elaps=[];
                     temp_acc=[];
                     for jj=1:mcmc,   %each dc with 20 simulations

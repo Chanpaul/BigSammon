@@ -48,7 +48,7 @@ pageblock.isNormalizable=1;   % indicates whether this dataset needs normalizati
 pageblock.other=[];  %others, e.g., the id and sth like.
 pageblock.ncopy=1;
 pageblock.numPerCopy=5473;
-pageblock.cnum=10;
+pageblock.cnum=5;
 pageblock.clean='N';
 dataMap('pageblock')=pageblock;
 % %************************QSAR biodegradation Data Set **************************************
@@ -140,7 +140,7 @@ base=10000;
 for ii=1:2:10,  
     prefix=strcat('sim_quit_primo_',num2str(ii*base));
     cur_dataset.name=strcat(prefix,'.dat');
-    cur_dataset.subdir='SimulateData/';        
+    cur_dataset.subdir='SimulateData\';        
     cur_dataset.label=21;
     cur_dataset.feature=[1:20];
     cur_dataset.isNormalizable=1;
@@ -148,6 +148,7 @@ for ii=1:2:10,
     cur_dataset.ncopy=1;
     cur_dataset.numPerCopy=ii*base;
     cur_dataset.cnum=4;
+    cur_dataset.clean='N';
     dataMap(prefix)=cur_dataset;    
 end;
 %****************************************************************************

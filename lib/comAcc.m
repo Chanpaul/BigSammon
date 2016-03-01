@@ -1,5 +1,5 @@
 function result = comAcc(mappedA,data,cluster_method)
-[ND,na]=size(data.X);
+    [ND,na]=size(data.X);
     ClustName=unique(data.label);
     if strcmp(cluster_method,'kmeans'),
         idx=kmeans(mappedA,data.cnum);

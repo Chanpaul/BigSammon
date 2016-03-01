@@ -100,7 +100,7 @@ for i=1:maxstep;
     %title('Fuzzy Sammon mapping - training')
     drawnow
   end
-  fprintf(2, '\r%d iterations', i);
+  %fprintf(2, '\r%d iterations', i);
 end   
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % disp('Press any key.')
