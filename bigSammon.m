@@ -75,6 +75,7 @@ fig_name3=strcat(result_dir,flag,'_dc',num2str(percent),'2dim2');
 saveas(4,fig_name3{1},'png');
 projection.proj=result.proj.P;
 projection.elapsed=telapsed2+telapsed1;
+projection.dc=dc;
 close all;
 
 

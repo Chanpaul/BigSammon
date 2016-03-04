@@ -7,19 +7,19 @@ path(path,'lib');
 set(0,'DefaultFigureVisible','off');
 %***********************set global simulation configuration****************************
 data_set_name={'waveform','pageblock','Quitprimo'};
-base=10000;
-for ii=1:2:10,  
-    prefix=strcat('sim_quit_primo_',num2str(ii*base));
-    data_set_name{end+1}=prefix;
-end;
+% base=10000;
+% for ii=1:2:10,  
+%     prefix=strcat('sim_quit_primo_',num2str(ii*base));
+%     data_set_name{end+1}=prefix;
+% end;
 dataMap=sim_config(data_set_name);
 colors={'r.' 'gx' 'b+' 'ys' 'm.' 'c.' 'k.' 'r*' 'g*' 'b*' 'y*' 'm*' 'c*' 'k*' };
 cur_dir=pwd;
 data_set_keys=dataMap.keys();
 numOfDataset=length(data_set_keys);
 drtools={'bigsammon','sammon'};  %'sammon'
-mcmc=20;
-dc_lim=30;%50;
+mcmc=20;  
+dc_lim=20;%50;
 eval_method='fcm';  %'kmeans'
 %********************************end of configuration************************************
 %***********************************set Sammon configuration*****************************
@@ -29,10 +29,14 @@ eval_method='fcm';  %'kmeans'
 
 %*******************************run simulation**********************************************
 for ii = 1:numOfDataset,
+    var_list={};    %memory management;
     disp_str=sprintf('Running on dataset %s',data_set_keys{ii});
     disp(disp_str);
+    var_list{end+1}='disp_str';  %add to var_list;
     cur_data_str=dataMap(data_set_keys{ii});
+    var_list{end+1}='cur_data_str';
     result_dir=strcat(cur_dir,'\result\',data_set_keys{ii});
+    var_list{end+1}='result_dir';
     if exist(result_dir,'dir')~=7,
         %mkdirc=['mkdir', result_dir];
         mkdirc=sprintf('mkdir %s',result_dir);
@@ -40,7 +44,9 @@ for ii = 1:numOfDataset,
         system(mkdirc) ;
     end;
     dataFile=strcat('..\DataSet\',cur_data_str.subdir,cur_data_str.name);
+    var_list{end+1}='dataFile';
     rawdata=importdata(dataFile);
+    var_list{end+1}='rawdata';
     if strfind(cur_data_str.name,'.xls'),        
         dataset=rawdata.data.Sheet1; 
     else
@@ -54,6 +60,8 @@ for ii = 1:numOfDataset,
         data.X=dataset(:,cur_data_str.feature);
         data.label=dataset(:,cur_data_str.label);
     end;
+    var_list{end+1}='dataset';
+    var_list{end+1}='data';
     
     data.cnum=cur_data_str.cnum;
     data.isNormalizable=cur_data_str.isNormalizable;   % indicates whether this dataset needs normalization.
@@ -63,6 +71,7 @@ for ii = 1:numOfDataset,
     [ND,na]=size(data.X);
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    var_list{end+1}='param';
     param.c=data.cnum;
     %fuzzy c-means clustering 
     param.m=2;
@@ -72,7 +81,7 @@ for ii = 1:numOfDataset,
     param.res_dir=result_dir;
 
     ClustName=unique(data.label);  
-    
+    var_list{end+1}='ClustName';
     fn=strcat(result_dir,'\','performance');
     fid=fopen(fn,'w');
     
@@ -127,32 +136,38 @@ for ii = 1:numOfDataset,
             fwrite(fid,content);
         else if strcmp(drtools{kk},'bigsammon'),
             %*********************bigSammon******************************
+                d_c=getdc(data,'fcm','ttt',30);
                 drname='bigsammon';
                 avg_elaps=[];
                 std_elaps=[];
                 avg_acc=[];
                 std_acc=[];
+                dc_list=[];
                 for tt=1:dc_lim,%50,%12:5:100,                    
                     param.percent=tt; %5 2                       
                     temp_elaps=[];
                     temp_acc=[];
                     for jj=1:mcmc,   %each dc with 20 simulations
                         mappedA=bigSammon(data,param);
-                        telapsed=mappedA.elapsed;
+                        telapsed=mappedA.elapsed;                        
                         res=comAcc(mappedA.proj,data,eval_method);
                         temp_elaps(jj)=telapsed;
                         temp_acc(jj)=res.accuracy;
                     end;
+                    dc_list(end+1)=mappedA.dc;
                     avg_elaps(tt)=mean(temp_elaps);
                     std_elaps(tt)=std(temp_elaps);
                     avg_acc(tt)=mean(temp_acc);
                     std_acc(tt)=std(temp_acc);
-                    content=sprintf('\n*********drname=%s***********\n  dc=%d, average running time (std): %f (%f)  \n, average accuracy (std)=%f(%f) \n',...
-                        drname, param.percent,avg_elaps(tt),std_elaps(tt),avg_acc(tt),std_acc(tt));                    
+                    content=sprintf('\n*********drname=%s***********\n  dc=%d (%f), average running time (std): %f (%f)  \n, average accuracy (std)=%f(%f) \n',...
+                        drname, param.percent,mappedA.dc,avg_elaps(tt),std_elaps(tt),avg_acc(tt),std_acc(tt));                    
                     fwrite(fid,content);
                 end;
+                content=sprintf('\n the optimum dc is %f \n',d_c);
+                fwrite(fid,content);
                 figure(999);
                 plotyy(1:dc_lim,avg_elaps,1:dc_lim,avg_acc);
+                set(gca,'XTick',[1:1:dc_lim]);                
                 grid;
                 %title_content=sprintf('BigSammon on %s with different ',flag{1},percent);
                 %title(title_content);
@@ -160,6 +175,10 @@ for ii = 1:numOfDataset,
                 saveas(999,fig_name5{1},'png');
             end;
         end;                 
+    end;
+    fclose(fid);
+    for ii=1:length(var_list),
+        clear(var_list{ii});      
     end;
 end;
 
